@@ -1,0 +1,473 @@
+import pyttsx3 #text to speech conversion
+import speech_recognition as sr #speech to text conversion
+import webbrowser #web pages
+import wikipedia #wikipedia results
+import pyscreenshot #screenshot
+import os #access desktop apps
+import datetime #for date and time
+import ctypes #background picture
+import pyjokes #jokes
+import pyautogui #mouse movements, click on objects, send text, and even use hotkeys.
+import random #random
+import time #time
+from ecapture import ecapture as ec #camera
+from playsound import playsound #playing sound file
+from ollama import chat
+from ollama import ChatResponse
+from test6 import voice_control
+from plyer import notification
+import json
+
+history_file = 'hist.json'
+training_data_file = 'trainf.json'
+
+print("\t\t\t SARO")
+print("\t\t\t ----")
+
+def load_json(file_path):
+    try:
+        with open(file_path, 'r') as file:
+            return json.load(file)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return [] 
+history = load_json(training_data_file)
+
+with open(history_file, 'w') as histf:
+    json.dump(history, histf, indent=4)
+
+def save_history(history):
+    with open(history_file, 'w') as file:
+        json.dump(history, file, indent=4)
+
+def checkhis(his):
+    his[:] = his[-15:]
+    save_history(his)
+
+def say(text):
+    engine = pyttsx3.init()
+    voices = engine.getProperty('voices')
+    engine.setProperty('rate', 160)
+    engine.setProperty('voice',voices[0].id)
+    engine.say(text)
+    engine.runAndWait()
+def takecommand():
+    r = sr.Recognizer()
+    with sr.Microphone() as source:
+        r.adjust_for_ambient_noise(source, duration=1)
+        print(" | Listening...")
+        playsound("C:\\Users\\Tharunkrishna\\Desktop\\vitnex25\\saroopen.mp3")
+        r.pause_threshold = 1
+        audio = r.listen(source)
+        try:
+            print(" | recognizing...")
+            playsound("C:\\Users\\Tharunkrishna\\Desktop\\vitnex25\\saroclose.mp3")
+            text = r.recognize_google(audio, language='en-in')
+            print(f" | user said : {text}\n")
+            history.append({'role':'user','content':text})
+            checkhis(history)
+        except Exception as e:
+            print(e)
+            print(" | can not recognize your voice")
+            return "none"
+        return text
+
+def wishMe():
+    hour = int(datetime.datetime.now().hour)
+    if hour >= 0 and hour < 12:
+        print(" | GOOD MORNING !")
+        say("GOOD MORNING !")
+
+    elif hour >= 12 and hour < 18:
+        print(" | GOOD AFTERNOON !")
+        say("GOOD AFTERNOON !")
+
+    else:
+        print(" | GOOD EVENING !")
+        say("GOOD EVENING !")
+
+def get_time():
+    Time = datetime.datetime.now().strftime("%I:%M:%S")
+    return Time
+
+def get_date():
+    year = str(datetime.datetime.now().year)
+    month = str(datetime.datetime.now().month)
+    day = str(datetime.datetime.now().day)
+
+    Date = day + "/" + month + "/" + year
+    return Date
+
+def ss():
+    image = pyscreenshot.grab()
+    image.show()
+    image.save(r"C:\Users\Tharunkrishna\Desktop\vitnex25\saro_img.jpg")
+
+
+def my_age():
+    birthday = datetime.datetime(2023, 8, 10)
+    diff = datetime.datetime.now() - birthday
+    print(" | " + str(diff.days))
+
+def set_reminder(reminder_message, reminder_time):
+    print(f" | Reminder set for {reminder_time} seconds from now.")
+    time.sleep(reminder_time)
+    notification.notify(
+        title="Reminder!",
+        message=reminder_message,
+        timeout=15
+    )
+    print(" | Reminder notification sent!")
+
+def respond(text):
+    if "good morning" in text or "good afternoon" in text or "good evening" in text:
+        wishMe()
+
+    elif "what is your name" in text or "who are you" in text or "what's your name" in text:
+        print(" | I AM SARO, YOUR PERSONAL ASSISTANT")
+        say("I AM SARO, YOUR PERSONAL ASSISTANT")
+
+    elif "repeat" in text:
+        print(" | WHAT SHOULD I REPEAT")
+        say("WHAT SHOULD I REPEAT")
+        r = takecommand()
+        print("  ", r)
+        say(r)
+
+    elif "reminder" in text:
+
+        print(" | WHAT I HAVE TO REMIND YOU?")
+        say("WHAT I HAVE TO REMIND YOU?")
+        reminder_message = takecommand()
+
+        print(" | SET A REMINDER IN HOW MANY SECONDS? ")
+        say("SET A REMINDER IN HOW MANY SECONDS? ")
+        reminder_time = int(takecommand())
+        set_reminder(reminder_message, reminder_time)
+
+
+    elif "open WhatsApp" in text:
+        print(" | OPENING WHATSAPP")
+        say("OPENING WHATSAPP..")
+        webbrowser.open("https://web.whatsapp.com/")
+        say("Voice Control Activated")
+        voice_control()
+        say("Voice Control Stopped")
+        exit()
+
+
+    elif "open YouTube" in text or "go to YouTube" in text:
+        print(" | OPENING YOUTUBE..")
+        say("OPENING YOUTUBE..")
+        webbrowser.open("https://www.youtube.com/")
+        say("Voice Control Activated")
+        voice_control()
+        say("Voice Control Stopped")
+        exit()
+
+    elif "open Google" in text:
+        print(" | OPENING GOOGLE..")
+        say("OPENING GOOGLE..")
+        webbrowser.open("https://www.google.co.in/")
+        say("Voice Control Activated")
+        voice_control()
+        say("Voice Control Stopped")
+        exit()
+
+    elif "open Facebook" in text:
+        print(" | OPENING FACEBOOK..")
+        say("OPENING FACEBOOK..")
+        webbrowser.open("https://www.facebook.com/")
+        say("Voice Control Activated")
+        voice_control()
+        say("Voice Control Stopped")
+        exit()
+
+    elif "open Instagram" in text or "open insta" in text:
+        print(" | OPENING INSTAGRAM..")
+        say("OPENING instaAGRAM..")
+        webbrowser.open("https://www.instagram.com/")
+        say("Voice Control Activated")
+        voice_control()
+        say("Voice Control Stopped")
+        exit()
+
+    elif "open Twitter" in text:
+        print(" | OPENING TWITTER..")
+        say("OPENING TWITTER..")
+        webbrowser.open("https://twitter.com/i/flow/login")
+        say("Voice Control Activated")
+        voice_control()
+        say("Voice Control Stopped")
+        exit()
+
+    elif "open g map" in text or "open map" in text:
+        print(" | OPENING GOOGLE MAP..")
+        say("OPENING GOOGLE MAP..")
+        webbrowser.open("https://www.google.com/maps/@21.125498,81.914063,5z")
+        say("Voice Control Activated")
+        voice_control()
+        say("Voice Control Stopped")
+        exit()
+
+    elif "open hotstar" in text:
+        print(" | OPENING HOTSTAR..")
+        say("OPENING HOTSTAR..")
+        webbrowser.open("https://www.hotstar.com/in")
+        say("Voice Control Activated")
+        voice_control()
+        say("Voice Control Stopped")
+        exit()
+
+    elif "open Netflix" in text:
+        print(" | OPENING NETFLIX..")
+        say("OPENING NETFLIX..")
+        webbrowser.open("https://www.netflix.com/in/")
+        say("Voice Control Activated")
+        voice_control()
+        say("Voice Control Stopped")
+        exit()
+
+
+    elif "open Amazon" in text:
+        print(" | OPENING AMAZON..")
+        say("OPENING AMAZON..")
+        webbrowser.open("https://www.amazon.in/")
+        say("Voice Control Activated")
+        voice_control()
+        say("Voice Control Stopped")
+        exit()
+
+    elif "open Prime" in text:
+        print(" | OPENING AMAZON PRIME..")
+        say("OPENING AMAZON PRIME..")
+        webbrowser.open(
+            "https://www.primevideo.com/?ref_=dvm_pds_amz_in_as_s_gm_159&gclid=CjwKCAiAyfybBhBKEiwAgtB7fsXpkU8_sGO_12CsFNWaSTG2qIh-l907EO8M1z1BRWivx7GvRz0YABoCfToQAvD_BwE")
+        say("Voice Control Activated")
+        voice_control()
+        say("Voice Control Stopped")
+        exit()
+
+    elif "open Flipkart" in text:
+        print(" | OPENING FLIPKART..")
+        say("OPENING FLIPKART..")
+        webbrowser.open("https://www.flipkart.com/")
+        say("Voice Control Activated")
+        voice_control()
+        say("Voice Control Stopped")
+        exit()
+
+    elif "open zee5" in text:
+        print(" | OPENING ZEE5..")
+        say("OPENING Z5..")
+        webbrowser.open(
+            "https://www.zee5.com/?utm_source=GoogleSearch&utm_medium=Mark_CPA&utm_campaign=Search_SVOD_ZEE5-Brand-ZEE5-Only-Ex-Performance&utm_term=zee5&utm_content=Brand-ZEE5-Only-Ex&gclid=CjwKCAiAyfybBhBKEiwAgtB7fgwEs43NpKI0GBhhr7Az7CX8cNESfEinn2rL2TMijj1ZPSlFBj2zcBoCQgUQAvD_BwE&gclsrc=aw.ds")
+        say("Voice Control Activated")
+        voice_control()
+        say("Voice Control Stopped")
+        exit()
+
+    elif "open Mega" in text:
+        print(" | OPENING MEGA..")
+        say("OPENING MEGA..")
+        webbrowser.open("https://mega.nz/fm/iV4HkL4C")
+        exit()
+
+    elif "open poster" in text:
+        print(" | OPENING MAIL..")
+        say("OPENING MAIL..")
+        webbrowser.open("https://mail.google.com/mail/u/0/?tab=rm&ogbl#inbox")
+        exit()
+
+    elif "open my note" in text:
+        print(" | OPENING YOUR NOTE..")
+        say("OPENING YOUR NOTE..")
+        os.startfile(r"C:\Users\Tharunkrishna\Desktop\vitnex25\saronotes.txt")
+        exit()
+
+    elif "open Notepad" in text:
+        print(" | OPENING NOTEPAD..")
+        say("OPENING NOTEPAD..")
+        os.startfile('notepad.exe')
+
+    elif "close notepad" in text:
+        print(" | CLOSING NOTEPAD..")
+        say("CLOSING NOTEPAD..")
+        os.system("TASKKILL /F /IM notepad.exe")
+
+
+    elif "take a note" in text:
+        print(" | TAKING DOWN")
+        say("TAKING DOWN")
+        file = open(r"C:\Users\Tharunkrishna\Desktop\vitnex25\saronotes.txt", 'w')
+        note = takecommand()
+        file.write(note)
+        file.close()
+        print(" | NOTE SAVED")
+        say("NOTE SAVED")
+
+    elif "login Mega" in text:
+        print(" | LOGING IN MEGA..")
+        say("LOGING IN MEGA..")
+        webbrowser.open("https://mega.nz/login")
+        time.sleep(10)
+        pyautogui.write("signinsignupacc@gmail.com")
+        pyautogui.press("enter")
+        pyautogui.write("signinsignupacc@0005")
+        pyautogui.press("enter")
+        exit()
+
+    elif "what is the time" in text or "what's the time" in text or "time" in text:
+        print(" | The Time is : ", get_time())
+        say(get_time())
+    elif "what is today's date" in text or "date" in text:
+        print(" | The Date is : ", get_date())
+        say(get_date())
+
+    elif "take screenshot" in text or "screenshot" in text or "capture" in text:
+        ss()
+
+    elif "volume up" in text or "increase the volume" in text:
+        pyautogui.press("volumeup")
+        pyautogui.press("volumeup")
+    elif "volume down" in text or "decrease the volume" in text:
+        pyautogui.press("volumedown")
+        pyautogui.press("volumedown")
+
+    elif "volume mute" in text or "mute the volume" in text:
+        pyautogui.press("volumemute")
+
+    elif "camera" in text or "take a photo" in text :
+        ec.capture(0, "saro camera", "TS.jpg")
+
+
+    elif 'search in Wikipedia for' in text:
+        query = text.replace("search in Wikipedia for", "")
+        say('Searching in Wikipedia for'), say(query)
+        result = wikipedia.summary(query, sentences=2)
+        print(" | ACCORDING TO WIKIPEDIA")
+        say("According to Wikipedia")
+        print(" | ")
+        print(" | " + result)
+        say(result)
+
+    elif "search in youtube for" in text.lower():
+        ind = text.lower().split().index("for")
+        search = text.split()[ind + 1:]
+        webbrowser.open(
+            "https://www.youtube.com/results?search_query=" +
+            "+".join(search)
+        )
+        say("results in youtube for"), say(search)
+        say("Voice Control Activated")
+        voice_control()
+        say("Voice Control Stopped")
+        exit()
+
+    elif "search in google" in text.lower():
+        ind = text.lower().split().index("for")
+        search = text.split()[ind + 1:]
+        webbrowser.open(
+            "https://www.google.com/search?q=" + "+".join(search)
+        )
+        say("resullts in google for"), say(search)
+        say("Voice Control Activated")
+        voice_control()
+        say("Voice Control Stopped")
+        exit()
+
+    elif "change background" in text or "change wallpaper" in text:
+        img = r'C:\Users\Thejas SB\Downloads\SARO Heart\saro setting background'
+        list_img = os.listdir(img)
+        imgChoice = random.choice(list_img)
+        randomImg = os.path.join(img, imgChoice)
+        ctypes.windll.user32.SystemParametersInfoW(20, 0, randomImg, 0)
+        print(" | BACKGROUND CHANGED SUCCESSFULLY")
+        say("BACKGROUND CHANGED SUCCESSFULLY")
+
+    elif "say some joke" in text or "say some jokes" in text or "joke" in text or "jokes" in text:
+        joke = pyjokes.get_joke()
+        print(" | " + joke, end=" ")
+        print("\U0001F606")
+        say(joke)
+
+    elif "where is" in text:
+        ind = text.lower().split().index("is")
+        location = text.split()[ind + 1:]
+        url = "https://www.google.com/maps/place/" + "".join(location)
+        say("THIS IS WHERE"), say(location), say("is")
+        webbrowser.open(url)
+        exit()
+
+    elif "wait" in text or "sleep" in text:
+        print(" | FOR HOW MANY SECONDS DO YOU WANT ME TO SLEEP")
+        say("FOR HOW MANY SECONDS DO YOU WANT ME TO SLEEP")
+        a = int(takecommand())
+        time.sleep(a)
+        say(a), say("SECONDS COMPLETED NOW YOU CAN ASK ME ANYTHING")
+
+    elif "exit" in text or "quit" in text or "stop listening" in text or "break" in text:
+        exit()
+
+    elif "power of" in text or "power off system" in text or "power off the system" in text or "shutdown" in text:
+        say("SHUTTING DOWN")
+        os.system("shutdown /s /t 1")
+
+    elif "play" in text or "song" in text or "play a song" in text:
+        print(" | WHAT SONG I SHOULD PLAY")
+        say("WHAT SONG I SHOULD PLAY")
+        s = takecommand()
+        os.startfile(r"C:\Users\Thejas SB\AppData\Roaming\Spotify\Spotify.exe")
+        time.sleep(3)
+        pyautogui.hotkey('ctrl', 'l')
+        time.sleep(2)
+        pyautogui.write(s, interval=0.1)
+        time.sleep(3)
+        pyautogui.press("enter")
+        pyautogui.press("tab")
+        pyautogui.press("tab")
+        pyautogui.press("tab")
+        pyautogui.press("enter")
+        exit()
+
+    elif "send a mail" in text or "email" in text or "send a email" in text or "mail" in text:
+        print(" | TO WHOM I SEND")
+        say("TO WHOM I SEND")
+        s = takecommand().replace(" ", "")
+        webbrowser.open("https://mail.google.com/mail/u/0/?tab=rm&ogbl#inbox?compose=new")
+        time.sleep(10)
+        pyautogui.write(s)
+        time.sleep(2)
+        pyautogui.press("tab")
+        pyautogui.press("tab")
+        pyautogui.write("SARO VOICE ASSISTANT")
+        pyautogui.press("tab")
+        print(" | WHAT SHOULD I SEND")
+        say("WHAT SHOULD I SEND")
+        t = takecommand()
+        pyautogui.write(t)
+        time.sleep(2)
+        pyautogui.press("tab")
+        pyautogui.press("enter")
+        exit()
+
+    elif "voice control" in text:
+        say("Voice Control Activated")
+        voice_control()
+        say("Voice Control Stopped")
+
+    else:
+        response: ChatResponse = chat(model='llama3.2', messages=[
+            {
+                'role': 'user',
+                'content': text,
+            },
+        ])
+        tem = response['message']['content']
+        print(" | "+tem)
+        history.append({"role":"assistant","content":tem})
+        say(tem)
+        checkhis(history)   
+
+while True:
+    text = takecommand()
+    respond(text)
