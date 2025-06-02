@@ -1,19 +1,20 @@
 # SARO-Personal-Voice-Assistance
-Problem Statement
+Problem Statement:
+
 1️⃣ Frustrated User Typing:
 A person sitting at a desk, typing on a keyboard with a stressed or frustrated expression.
 Hands moving rapidly on the keyboard, with an overwhelmed look on their face.
 A dimly lit workspace, emphasizing the struggle of manual input.
+
 2️⃣ Cluttered Workspace:
 A messy desk with a keyboard, mouse, stacks of papers, sticky notes, and cables.
 Someone reaching for a keyboard with one hand while holding a phone in the other, showing multitasking stress.
 A person looking confused at a cluttered screen with multiple open windows.
+
 3️⃣ Accessibility Challenges:
 A person with limited mobility trying to use a laptop but struggling.
 A visually impaired individual using a screen reader but facing difficulty.
 A person in a wheelchair attempting to interact with a keyboard.
-
-
 
 Solution:
 
@@ -38,6 +39,7 @@ The system processes speech, understands the intent, and executes the action imm
 AI learns user preferences and prioritizes frequently used commands.
 Provides context-aware responses (e.g., "Do you want to resume your last song?").
 Customizable shortcuts and workflows for faster interactions.
+
 3️⃣ Key Benefits :
 🔹 Enhanced Productivity – No need to type or navigate manually; AI speeds up interactions.
 🔹 Accessibility for Everyone – Assists blind users, people with mobility issues, and elderly individuals.
